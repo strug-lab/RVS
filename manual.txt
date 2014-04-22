@@ -1,0 +1,266 @@
+# Implementation of RVS
+# October 16 2013
+#
+#
+############# Manual ################
+## Sections:
+### 1) Generation of sequence data  
+### 2) Single SNP analysis 
+### 3) Rare variant analysis
+#####################################
+
+####### 1) Generation of sequence data 
+##
+## Source file: eg1.r
+## Required packages: NA 
+## External files required: em.r
+##
+#
+# Generate sequence data under null hypothesis: function gen_matrix
+# Imput: 
+#     L - number of variants
+#     ncase - number of cases
+#	  ncont - number of controls
+#     mdcase - average read depth in cases
+#	  sddcase - standard deviation of read depth in cases 
+#     mdcase - average read depth in cases
+#	  sddcase - standard deviation of read depth in cases  
+#     em - average error rate, probability that sequence call is wrong 
+#	  esd - standard deviation of error rate
+#     mmaf - MAF for L variants, HWE is assumed
+# Output: Object with three fields
+# $MM - conditional expected value E(Gij|Dij)
+# $P -estimated genotype frequencies P(G=0), P(G=1), P(G=2)
+# $G - true genotype, from which sequence data generated
+#
+### Use: gen_matrix(L,ncase,ncont,mdcase,sddcase,mdcont,sddcont,em,esd,mmaf,R)
+ 
+# Generate sequence data under alternative hypothesis: function gen_matrix_c
+# Input: 
+#     L - number of variants
+#     ncase - number of cases
+#	  ncont - number of controls
+#     mdcase - average read depth in cases
+#	  sddcase - standard deviation of read depth in cases 
+#     mdcase - average read depth in cases
+#	  sddcase - standard deviation of read depth in cases  
+#     em - average error rate, probability that sequence call is wrong 
+#	  esd - standart deviation of error rate
+#     mmafCa - MAF for cases for L variants
+#     mmafCo - MAF for controls for L variants
+# Output: Object with three fields
+# $MM - conditional expected value E(Gij|Dij)
+# $P -estimated genotype frequencies P(G=0), P(G=1), P(G=2)
+# $G - true genotype, from which sequence data generated
+#
+### Use: gen_matrix_c(L,ncase,ncont,mdcase,sddcase,mdcont,sddcont,em,esd,mmafCa,mmafCo,R)
+
+##### Other useful Scripts
+##
+## Calculation of E(G|D) from observed genotype likelihoods
+## Results are based on combined data!!!!
+## A0,A1,A2 - matrix of genotype likelihoods for G=0,1,2 Case
+## A0,A1,A2 - n by L matrices, n1-sample size, L-number of variants
+## B0,B1,B2 - matrix of genotype likelihoods for G=0,1,2 Control
+## B0,B1,B2 - n2 by L matrices, n2-sample size, L-number of variants
+## L - number of variants
+## MM - output n1+n2 by L matrix of expected values. The first n1 rows are data for cases
+## and next n2 rows are data for controls
+
+
+
+####### 2) Single SNP analysis 
+##
+## Source file: eg1.r
+## Required packages: NA 
+## External files required: NA
+##
+
+
+##
+##### Asymptotic tests 
+##
+
+# Regular Score/Trend test
+# Input values matrices of genotypes for cases and controls
+# For cases: matrix M1 has next dimensions ncase by J, J - number of variants and ncase - number of cases
+# For controls: matrix M2 has next dimensions ncont by J, J - number of variants and ncont - number of controls
+#  
+# Output: 
+### vector of p-values for J variants
+### Evaluation by asymptotic distribution
+##
+## Use: test_EG(M1,M2)
+
+
+# RVS Score/Trend test
+# Input values matrices of expected values of genotypes given sequence data for cases and controls
+# Uses the robust variance estimates described in manuscript
+# For cases: matrix M1 has next dimensions ncase by J, J - number of variants and ncase - number of cases
+# For controls: matrix M2 has next dimensions ncont by J, J - number of variants and ncont - number of controls
+# P - Genotype frequency for J variants P(G=0), P(G=1) and P(G=2)
+#  
+### Vector of p-values for J variants
+### Evaluation by asymptotic distribution
+##
+## Use: test_EGC = function(M1,M2,P)
+
+# RVS Score/Trend test
+# Input values matrix of expected values of genotypes given sequence data
+# Uses the regular variance estimates for cases and controls
+# For cases: matrix M1 has next dimensions ncase by J, J - number of variants and ncase - number of cases
+# For controls: matrix M2 has next dimensions ncont by J, J - number of variants and ncont - number of controls
+# P - genotype frequency for J variants P(G=0), P(G=1) and P(G=2)
+#  
+# Output: 
+### vector of p-values for J variants
+### Evaluation by asymptotic distribution
+##
+## Use: test_EGCV(M1,M2,P)
+
+##
+##
+##### Permutation/Bootstrap tests 
+##
+##
+
+# Regular Score/Trend test
+# Input values matrices of genotypes for cases and controls
+# For cases: matrix M1 has next dimensions ncase by J, J - number of variants and ncase - number of cases
+# For controls: matrix M2 has next dimensions ncont by J, J - number of variants and ncont - number of controls
+# P - set to 1
+# Output: 
+### vector of p-values for J variants
+### Evaluation by permutation distribution
+##
+## Use: test_EGPv(M1,M2,P,perm)
+
+# RVS Score/Trend test
+# Input values matrix of expected values of genotypes given sequence data
+# Uses the robust variance estimates for cases and controls
+# For cases: matrix M1 has next dimensions ncase by J, J - number of variants and ncase - number of cases
+# For controls: matrix M2 has next dimensions ncont by J, J - number of variants and ncont - number of controls
+# P - genotype frequency for J variants P(G=0), P(G=1) and P(G=2)
+# perm -  number of permutations
+#
+# Output: 
+### Vector of p-values for J variants
+### Evaluation by bootstrap distribution
+##
+## Use: test_EGB(M1,M2,P,perm)
+
+# RVS Score/Trend test
+# Input values matrix of expected values of genotypes given sequence data
+# Uses the regular variance estimates for cases and controls
+# For cases: matrix M1 has next dimensions ncase by J, J - number of variants and ncase - number of cases
+# For controls: matrix M2 has next dimensions ncont by J, J - number of variants and ncont - number of controls
+# P - genotype frequency for J variants P(G=0), P(G=1) and P(G=2)
+# perm -  number of permutations
+#
+# Output: 
+### vector of p-values for J variants
+### Evaluation by bootstrap distribution
+##
+##Use: test_EGBnew(M1,M2,P,perm)
+
+ 
+###### 3)Rare variant analysis
+##
+## Source file: helpers.r
+## Required packages: MASS, CompQuadForm
+## External files required: NA
+##
+##
+########     Useful functions
+## This functions can be used to get score statistic and its variance.
+## This values can be used to construct test statistics for rare variant analysis.
+## We implement only analysis with CAST and C-alpha.
+##
+# Get score vector S=(S1,...,Sj)
+# Input parameters:
+#  Y - vector of phenotypes, Y=1 or Y=0
+#  X - matrix of genotype calls/conditional expected values
+#
+# Output: score vector S, 
+#
+# Use: calcS(X,Y)
+
+##
+# Get Variance of vector S
+# Regular variance, from logistic model
+#  Y - vector of phenotypes, Y=1 or Y=0
+#  X - matrix of genotype calls
+#
+# Output: covariance matrix for vector S
+#
+# Use: calcVS(X,Y)
+
+##
+# Get Variance of vector S
+# Robust variance estimate I 
+# Input:
+#  X1 - matrix of expected genotypes given sequence data for cases
+#  X2 - matrix of expected genotypes given sequence data for controls
+#  Y - vector of phenotypes, Y=1 or Y=0
+#
+# Use: calcVS_two(X1,X2,Y)
+
+##
+# Get Variance of vector S
+# Robust variance estimate II
+#  X1 - matrix of expected genotypes given sequence data for cases
+#  X2 - matrix of expected genotypes given sequence data for controls
+#  Y - vector of phenotypes, Y=1 or Y=0
+#  Uses P to estimate variance in cases.
+#  P - genotype frequency for J variants P(G=0), P(G=1) and P(G=2), J by 3 matrix
+#
+# Use: calcVS_twoP(X1,X2,P,Y)
+
+#### Implementation of CAST and C-alpha 
+#### This methods can be applied to analysis with 
+ 
+# Regular analysis with rare variants
+# Get p-values from CAST and C-alpha
+#
+# Input values matrix of genotype calls
+# Input Y - phenotype value, 1-cases and 0-controls
+# Matrix X - has next dimensions n by J,- number of variants, n - sample size
+# perm - number of permutations
+# Resampling: Permutation
+# Output:
+# two p-values for CAST and C-alpha
+#
+# Use: get_pval(Y,X,perm)
+
+# RVS analysis with rare variants
+# Get p-values from RVS with CAST and C-alpha
+# Robust variance estimate I
+#
+# Input values matrix of expected values of genotypes given sequence data 
+# Input Y - phenotype value, 1-cases and 0-controls
+# Matrix X - has next dimensions n by J,- number of variants, n - sample size
+# perm - number of permutations
+# Resampling: Bootstrap
+# Output:
+# two p-values for CAST and C-alpha
+#
+# Use: get_pval_b(Y,X,perm)
+
+
+# RVS analysis with rare variants
+# Get p-values from RVS with CAST and C-alpha
+# Robust variance estimate II 
+#
+# Input values matrix of expected values of genotypes given sequence data 
+# Input Y - phenotype value, 1-cases and 0-controls
+# Matrix X - has next dimensions n by J,- number of variants, n - sample size
+# P - genotype frequency for J variants P(G=0), P(G=1) and P(G=2), J by 3 matrix
+# perm - number of permutations
+# Resampling: Bootstrap
+# Variance Estimate: Robust
+# Output:
+# two p-values for CAST and C-alpha
+#
+# Use: get_pval_b1(Y,X,P,perm)
+
+
