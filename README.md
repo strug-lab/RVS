@@ -13,6 +13,5 @@ frequency. It controls Type I error and has comparable power to
 the 'gold standard' analysis with the true underlying genotypes
 for both common and rare variants.
 
-The R current package contains all the core functions but does not
-process or filter the vcf file yet.
+Original scripts from Andriy Derkach.
 
