@@ -1,7 +1,7 @@
 RVS
 ===
 
-Robust Variance Statistic Score
+Robust Variance Score
 
 The robust variance score (RVS) is a likelihood-based method/test
 to compute p-values to analyze and interpret genetic association
